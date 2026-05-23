@@ -26,11 +26,11 @@ Item {
         anchors.fill: shadowSource
         source: shadowSource
         horizontalOffset: 0
-        verticalOffset: Math.round(16 * root.uiScale)
-        radius: Math.round(48 * root.uiScale)
-        samples: 64
-        color: "#26000000"
-        cached: true
+        verticalOffset: Math.round(8 * root.uiScale)
+        radius: Math.round(32 * root.uiScale)
+        samples: Math.round(32 * root.uiScale) * 2 + 1
+        color: "#1C000000"
+        cached: false
     }
 
     Rectangle {

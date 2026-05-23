@@ -8,8 +8,12 @@ import QtGraphicalEffects 1.15
 Item {
     id: popupRoot
 
+    property int maxVisible: 5
+    property int itemHeight: Math.round(42 * root.uiScale)
+    property int visibleCount: Math.min(sessionList.count, maxVisible)
+
     width:  Math.round(260 * root.uiScale)
-    height: Math.max(1, sessionList.count) * Math.round(42 * root.uiScale) + Math.round(12 * root.uiScale)
+    height: visibleCount * itemHeight + Math.round(12 * root.uiScale)
 
     Rectangle {
         id: shadowSource
@@ -22,11 +26,11 @@ Item {
         anchors.fill: shadowSource
         source: shadowSource
         horizontalOffset: 0
-        verticalOffset: Math.round(10 * root.uiScale)
-        radius: Math.round(30 * root.uiScale)
-        samples: 44
-        color: "#24000000"
-        cached: true
+        verticalOffset: Math.round(6 * root.uiScale)
+        radius: Math.round(20 * root.uiScale)
+        samples: Math.round(20 * root.uiScale) * 2 + 1
+        color: "#20000000"
+        cached: false
     }
 
     Rectangle {
@@ -37,6 +41,7 @@ Item {
         color: "#E6FFFFFF"
         border.color: "#99FFFFFF"
         border.width: 1
+        clip: true
 
         ListView {
             id: sessionList
@@ -48,11 +53,29 @@ Item {
 
             clip: true
             model: sessionModel
-            interactive: contentHeight > height
+            interactive: count > popupRoot.maxVisible
+            boundsBehavior: Flickable.StopAtBounds
+
+            // Custom scroll indicator — no QtQuick.Controls dependency
+            Rectangle {
+                visible: sessionList.count > popupRoot.maxVisible
+                width: Math.round(3 * root.uiScale)
+                height: sessionList.height * (popupRoot.maxVisible / sessionList.count)
+                y: sessionList.contentY * (sessionList.height / sessionList.contentHeight)
+                anchors.right: parent.right
+                anchors.rightMargin: Math.round(3 * root.uiScale)
+                radius: width / 2
+                color: config.AccentGreen
+                opacity: sessionList.moving ? 0.8 : 0.4
+
+                Behavior on opacity {
+                    NumberAnimation { duration: 150 }
+                }
+            }
 
             delegate: Rectangle {
                 width: sessionList.width
-                height: Math.round(42 * root.uiScale)
+                height: popupRoot.itemHeight
                 radius: Math.round(12 * root.uiScale)
 
                 property bool selected: index === root.selectedSessionIndex

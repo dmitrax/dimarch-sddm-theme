@@ -28,12 +28,17 @@ Rectangle {
 
     // ── Auto UI scale based on primary monitor height ─────
     // Base sizes in theme.conf are defined for 1080p.
-    // Scale up automatically for higher resolutions.
+    // UiScale=0 in theme.conf means auto-detect.
 
     property real uiScale: {
-        if (primaryHeight >= 2160) return 2.0   // 4K
-        if (primaryHeight >= 1440) return 1.5   // 1440p
-        return 1.0                               // 1080p and below
+        var manual = parseFloat(config.UiScale)
+        if (manual > 0) return manual          // manual override
+
+        var h = primaryHeight
+        if (h >= 2160) return 1.5             // 4K
+        if (h >= 1440) return 1.2             // 1440p
+        if (h >= 1080) return 1.0             // 1080p
+        return 0.85                            // below 1080p
     }
 
     // ── Session state ─────────────────────────────────────

@@ -22,11 +22,11 @@ Item {
         anchors.fill: panelShadowSource
         source: panelShadowSource
         horizontalOffset: 0
-        verticalOffset: Math.round(8 * root.uiScale)
-        radius: Math.round(26 * root.uiScale)
-        samples: 36
-        color: "#20000000"
-        cached: true
+        verticalOffset: Math.round(4 * root.uiScale)
+        radius: Math.round(16 * root.uiScale)
+        samples: Math.round(16 * root.uiScale) * 2 + 1
+        color: "#18000000"
+        cached: false
     }
 
     Rectangle {

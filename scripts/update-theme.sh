@@ -1,17 +1,26 @@
 #!/usr/bin/env bash
 # =============================================================================
 # DimArch SDDM Theme — update-theme.sh
-# Updates SystemName, locale strings and primary monitor geometry in theme.conf
+# Updates SystemName and locale strings in theme.conf.
+#
+# UI scale is determined automatically at SDDM startup via QML (root.height).
+# Monitor geometry (PrimaryX/Y/Width/Height) can be set manually if needed
+# for multi-monitor setups — it does NOT require xrandr.
 #
 # Usage:
 #   sudo ./update-theme.sh                          # auto-detect everything
 #   sudo ./update-theme.sh --name "DimArch OS"     # set name explicitly
 #   sudo ./update-theme.sh --locale ru              # set locale explicitly
-#   sudo ./update-theme.sh --monitor DP-1           # set monitor explicitly
-#   sudo ./update-theme.sh --monitor primary        # use xrandr primary monitor
+#   sudo ./update-theme.sh --name "My OS" --locale en
 #
-# After system changes (language, monitors):
+# After system language change:
 #   sudo /usr/share/sddm/themes/dimarch/scripts/update-theme.sh
+#
+# For multi-monitor — set primary monitor manually in theme.conf:
+#   PrimaryX=1920
+#   PrimaryY=0
+#   PrimaryWidth=3840
+#   PrimaryHeight=2160
 # =============================================================================
 
 set -euo pipefail
@@ -39,7 +48,6 @@ fi
 
 ARG_NAME=""
 ARG_LOCALE=""
-ARG_MONITOR=""
 
 while [[ $# -gt 0 ]]; do
     case "$1" in
@@ -51,13 +59,9 @@ while [[ $# -gt 0 ]]; do
             ARG_LOCALE="$2"
             shift 2
             ;;
-        --monitor)
-            ARG_MONITOR="$2"
-            shift 2
-            ;;
         *)
             echo "Unknown option: $1" >&2
-            echo "Usage: $0 [--name <SystemName>] [--locale <en|ru>] [--monitor <name|primary>]" >&2
+            echo "Usage: $0 [--name <SystemName>] [--locale <en|ru>]" >&2
             exit 1
             ;;
     esac
@@ -118,104 +122,6 @@ apply_locale() {
     return 0
 }
 
-# ── Detect primary monitor via xrandr ─────────────────────────────────────────
-#
-# xrandr output example:
-#   DP-1 connected primary 3840x2160+1920+0 (normal left inverted right x axis y axis) 600mm x 340mm
-#   DP-2 connected 1920x1080+0+0 (normal left inverted right x axis y axis) 530mm x 300mm
-#
-# Geometry format: WxH+X+Y
-
-parse_monitor_geometry() {
-    # $1 = monitor name, or "primary" to auto-pick xrandr primary
-    local target="$1"
-    local xrandr_out
-
-    if ! command -v xrandr &>/dev/null; then
-        echo "Warning: xrandr not found — cannot auto-detect monitor geometry." >&2
-        return 1
-    fi
-
-    xrandr_out=$(xrandr --query 2>/dev/null) || {
-        echo "Warning: xrandr failed — display server may not be running." >&2
-        return 1
-    }
-
-    local line
-    if [[ "$target" == "primary" ]]; then
-        # Pick the monitor marked as primary by xrandr
-        line=$(echo "$xrandr_out" | grep " connected primary " | head -1)
-        if [[ -z "$line" ]]; then
-            # No primary flag — fall back to first connected monitor
-            line=$(echo "$xrandr_out" | grep " connected " | head -1)
-        fi
-    else
-        # Pick by name (e.g. DP-1, HDMI-1)
-        line=$(echo "$xrandr_out" | grep "^${target} connected " | head -1)
-        if [[ -z "$line" ]]; then
-            echo "Warning: monitor '${target}' not found or not connected." >&2
-            echo "Connected monitors:" >&2
-            echo "$xrandr_out" | grep " connected " | awk '{print "  "$1}' >&2
-            return 1
-        fi
-    fi
-
-    if [[ -z "$line" ]]; then
-        echo "Warning: no connected monitor found via xrandr." >&2
-        return 1
-    fi
-
-    # Extract WxH+X+Y geometry token
-    local geo
-    geo=$(echo "$line" | grep -oP '\d+x\d+\+\d+\+\d+' | head -1)
-
-    if [[ -z "$geo" ]]; then
-        echo "Warning: could not parse geometry from: $line" >&2
-        return 1
-    fi
-
-    # Parse into components
-    local w h x y
-    w=$(echo "$geo" | grep -oP '^\d+')
-    h=$(echo "$geo" | grep -oP '(?<=x)\d+(?=\+)')
-    x=$(echo "$geo" | grep -oP '(?<=\+)\d+' | sed -n '1p')
-    y=$(echo "$geo" | grep -oP '(?<=\+)\d+' | sed -n '2p')
-
-    local mon_name
-    mon_name=$(echo "$line" | awk '{print $1}')
-
-    echo "${mon_name} ${w} ${h} ${x} ${y}"
-    return 0
-}
-
-detect_monitor() {
-    # Auto-detect: prefer xrandr primary, fall back to 0 (full screen)
-    local result
-    result=$(parse_monitor_geometry "primary") || {
-        echo ""
-        return 1
-    }
-    echo "$result"
-}
-
-apply_monitor() {
-    local target="$1"   # monitor name or "primary"
-    local result
-
-    result=$(parse_monitor_geometry "$target") || return 1
-
-    local mon_name w h x y
-    read -r mon_name w h x y <<< "$result"
-
-    patch_key "PrimaryX"      "$x"
-    patch_key "PrimaryY"      "$y"
-    patch_key "PrimaryWidth"  "$w"
-    patch_key "PrimaryHeight" "$h"
-
-    echo "  Monitor     → ${mon_name}  ${w}×${h} at +${x}+${y}"
-    return 0
-}
-
 # ── Main ──────────────────────────────────────────────────────────────────────
 
 echo "DimArch SDDM Theme — update-theme.sh"
@@ -246,22 +152,12 @@ else
     echo "  Locale      → skipped"
 fi
 
-# Resolve and apply monitor geometry
-if [[ -n "$ARG_MONITOR" ]]; then
-    # Explicit monitor name or "primary"
-    if apply_monitor "$ARG_MONITOR"; then
-        :
-    else
-        echo "  Monitor     → skipped (not found)"
-    fi
-else
-    # Auto-detect via xrandr primary
-    if apply_monitor "primary"; then
-        :
-    else
-        echo "  Monitor     → 0,0 auto (xrandr not available or no display)"
-    fi
-fi
-
+echo ""
+echo "  UI scale and monitor geometry are detected automatically at SDDM startup."
+echo "  To override, edit theme.conf manually:"
+echo "    UiScale=1.5         # explicit scale (0 = auto)"
+echo "    PrimaryX=1920       # for multi-monitor setups"
+echo "    PrimaryWidth=3840"
+echo "    PrimaryHeight=2160"
 echo ""
 echo "Done. Restart SDDM to apply: sudo systemctl restart sddm"
