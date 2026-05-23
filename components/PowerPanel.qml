@@ -8,8 +8,8 @@ import QtGraphicalEffects 1.15
 Item {
     id: powerRoot
 
-    width: 236
-    height: 56
+    width:  Math.round(236 * root.uiScale)
+    height: Math.round(56  * root.uiScale)
 
     Rectangle {
         id: panelShadowSource
@@ -22,8 +22,8 @@ Item {
         anchors.fill: panelShadowSource
         source: panelShadowSource
         horizontalOffset: 0
-        verticalOffset: 8
-        radius: 26
+        verticalOffset: Math.round(8 * root.uiScale)
+        radius: Math.round(26 * root.uiScale)
         samples: 36
         color: "#20000000"
         cached: true
@@ -32,14 +32,14 @@ Item {
     Rectangle {
         id: panel
         anchors.fill: parent
-        radius: 19
+        radius: Math.round(19 * root.uiScale)
         color: "#A8FFFFFF"
         border.color: "#99FFFFFF"
         border.width: 1
 
         Row {
             anchors.centerIn: parent
-            spacing: 36
+            spacing: Math.round(36 * root.uiScale)
 
             PanelIcon {
                 symbol: "⏻"

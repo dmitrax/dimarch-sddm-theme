@@ -1,5 +1,5 @@
 // =========================================================
-// DimArch SDDM Theme 1.0.0
+// DimArch SDDM Theme 1.2.0
 // Theme ID: dimarch
 // Qt 5.x compatible
 // =========================================================
@@ -17,6 +17,27 @@ Rectangle {
     height: parent ? parent.height : 1080
     color: config.FallbackBg
 
+    // ── Primary monitor zone ──────────────────────────────
+    // If PrimaryWidth/Height are 0, fall back to full screen.
+    // Use physical pixel values from your display configuration.
+
+    property int primaryX:      parseInt(config.PrimaryX)      > 0 ? parseInt(config.PrimaryX)      : 0
+    property int primaryY:      parseInt(config.PrimaryY)      > 0 ? parseInt(config.PrimaryY)      : 0
+    property int primaryWidth:  parseInt(config.PrimaryWidth)  > 0 ? parseInt(config.PrimaryWidth)  : root.width
+    property int primaryHeight: parseInt(config.PrimaryHeight) > 0 ? parseInt(config.PrimaryHeight) : root.height
+
+    // ── Auto UI scale based on primary monitor height ─────
+    // Base sizes in theme.conf are defined for 1080p.
+    // Scale up automatically for higher resolutions.
+
+    property real uiScale: {
+        if (primaryHeight >= 2160) return 2.0   // 4K
+        if (primaryHeight >= 1440) return 1.5   // 1440p
+        return 1.0                               // 1080p and below
+    }
+
+    // ── Session state ─────────────────────────────────────
+
     property int selectedSessionIndex: 0
     property string currentSessionName: ""
 
@@ -30,7 +51,6 @@ Rectangle {
             loginCard.showError(config.ErrorEmptyPassword)
             return
         }
-
         sddm.login(userModel.lastUser, password, selectedSessionIndex)
     }
 
@@ -38,7 +58,7 @@ Rectangle {
         sessionPopup.visible = !sessionPopup.visible
     }
 
-    // Initialize visible session name without writing to read-only sessionModel.lastIndex.
+    // Initialize visible session name
     Repeater {
         model: sessionModel
 
@@ -47,11 +67,9 @@ Rectangle {
                 if (sessionModel.lastIndex >= 0) {
                     root.selectedSessionIndex = sessionModel.lastIndex
                 }
-
                 if (index === root.selectedSessionIndex) {
                     root.currentSessionName = model.name
                 }
-
                 if (root.currentSessionName.length === 0 && index === 0) {
                     root.currentSessionName = model.name
                     root.selectedSessionIndex = 0
@@ -59,6 +77,8 @@ Rectangle {
             }
         }
     }
+
+    // ── Background (covers full virtual desktop) ──────────
 
     Image {
         id: bgImage
@@ -85,37 +105,49 @@ Rectangle {
         }
     }
 
-    ClockPanel {
-        anchors {
-            top: parent.top
-            right: parent.right
-            topMargin: 72
-            rightMargin: 86
+    // ── Primary zone — all UI lives here ─────────────────
+
+    Item {
+        id: primaryZone
+        x: root.primaryX
+        y: root.primaryY
+        width: root.primaryWidth
+        height: root.primaryHeight
+
+        ClockPanel {
+            anchors {
+                top: parent.top
+                right: parent.right
+                topMargin: Math.round(72 * root.uiScale)
+                rightMargin: Math.round(86 * root.uiScale)
+            }
+        }
+
+        Column {
+            id: loginStack
+            anchors.centerIn: parent
+            spacing: Math.round(18 * root.uiScale)
+
+            LoginCard {
+                id: loginCard
+                sessionName: root.currentSessionName
+            }
+
+            PowerPanel {
+                anchors.horizontalCenter: parent.horizontalCenter
+            }
+        }
+
+        SessionPopup {
+            id: sessionPopup
+            visible: false
+            z: 100
+            anchors.horizontalCenter: loginStack.horizontalCenter
+            y: loginStack.y + loginCard.height + Math.round(10 * root.uiScale)
         }
     }
 
-    Column {
-        id: loginStack
-        anchors.centerIn: parent
-        spacing: 18
-
-        LoginCard {
-            id: loginCard
-            sessionName: root.currentSessionName
-        }
-
-        PowerPanel {
-            anchors.horizontalCenter: parent.horizontalCenter
-        }
-    }
-
-    SessionPopup {
-        id: sessionPopup
-        visible: false
-        z: 100
-        anchors.horizontalCenter: loginStack.horizontalCenter
-        y: loginStack.y + loginCard.height + 10
-    }
+    // ── SDDM signals ──────────────────────────────────────
 
     Connections {
         target: sddm

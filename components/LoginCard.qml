@@ -8,11 +8,11 @@ import QtGraphicalEffects 1.15
 Item {
     id: loginCardRoot
 
-    width: parseInt(config.CardWidth)
-    height: parseInt(config.CardHeight)
+    width:  Math.round(parseInt(config.CardWidth)  * root.uiScale)
+    height: Math.round(parseInt(config.CardHeight) * root.uiScale)
 
-    property int pad: parseInt(config.CardPadding)
-    property int gap: parseInt(config.CardSpacing)
+    property int pad: Math.round(parseInt(config.CardPadding) * root.uiScale)
+    property int gap: Math.round(parseInt(config.CardSpacing) * root.uiScale)
     property string sessionName: ""
 
     Rectangle {
@@ -26,8 +26,8 @@ Item {
         anchors.fill: shadowSource
         source: shadowSource
         horizontalOffset: 0
-        verticalOffset: 16
-        radius: 48
+        verticalOffset: Math.round(16 * root.uiScale)
+        radius: Math.round(48 * root.uiScale)
         samples: 64
         color: "#26000000"
         cached: true
@@ -36,7 +36,7 @@ Item {
     Rectangle {
         id: card
         anchors.fill: parent
-        radius: parseInt(config.CardRadius)
+        radius: Math.round(parseInt(config.CardRadius) * root.uiScale)
         color: config.CardBg
         border.color: config.CardBorder
         border.width: 1
@@ -48,11 +48,9 @@ Item {
                 top: parent.top
                 margins: 1
             }
-
             height: parent.height * 0.46
             radius: parent.radius
             opacity: 0.20
-
             gradient: Gradient {
                 GradientStop { position: 0.0; color: "#FFFFFFFF" }
                 GradientStop { position: 1.0; color: "#00FFFFFF" }
@@ -69,14 +67,14 @@ Item {
 
             UserAvatar {
                 anchors.horizontalCenter: parent.horizontalCenter
-                size: parseInt(config.AvatarSize)
+                size: Math.round(parseInt(config.AvatarSize) * root.uiScale)
             }
 
             Text {
                 anchors.horizontalCenter: parent.horizontalCenter
                 text: config.WelcomePrefix + " " + config.SystemName
                 font.family: config.FontFamily
-                font.pixelSize: 25
+                font.pixelSize: Math.round(25 * root.uiScale)
                 font.weight: Font.DemiBold
                 color: config.TextPrimary
                 renderType: Text.NativeRendering
@@ -86,7 +84,7 @@ Item {
                 anchors.horizontalCenter: parent.horizontalCenter
                 text: userModel.lastUser
                 font.family: config.FontFamily
-                font.pixelSize: 16
+                font.pixelSize: Math.round(16 * root.uiScale)
                 font.weight: Font.Medium
                 color: config.TextSecondary
                 renderType: Text.NativeRendering
@@ -94,8 +92,8 @@ Item {
 
             Rectangle {
                 width: parent.width
-                height: 28
-                radius: 14
+                height: Math.round(28 * root.uiScale)
+                radius: Math.round(14 * root.uiScale)
                 color: "#3DFFFFFF"
                 border.color: "#66FFFFFF"
                 border.width: 1
@@ -103,12 +101,12 @@ Item {
 
                 Text {
                     anchors.centerIn: parent
-                    width: parent.width - 24
+                    width: parent.width - Math.round(24 * root.uiScale)
                     elide: Text.ElideRight
                     horizontalAlignment: Text.AlignHCenter
                     text: config.LabelSession + " " + loginCardRoot.sessionName
                     font.family: config.FontFamily
-                    font.pixelSize: 13
+                    font.pixelSize: Math.round(13 * root.uiScale)
                     color: config.TextSecondary
                     renderType: Text.NativeRendering
                 }
@@ -117,8 +115,8 @@ Item {
             Rectangle {
                 id: passwordBox
                 width: parent.width
-                height: parseInt(config.InputHeight)
-                radius: parseInt(config.InputRadius)
+                height: Math.round(parseInt(config.InputHeight) * root.uiScale)
+                radius: Math.round(parseInt(config.InputRadius) * root.uiScale)
                 color: config.InputBg
                 border.color: passwordField.activeFocus ? config.InputBorderFocus : config.InputBorder
                 border.width: passwordField.activeFocus ? 1.8 : 1.2
@@ -131,7 +129,7 @@ Item {
                     anchors.centerIn: parent
                     text: config.LabelPassword
                     font.family: config.FontFamily
-                    font.pixelSize: 16
+                    font.pixelSize: Math.round(16 * root.uiScale)
                     color: config.InputPlaceholder
                     visible: passwordField.text.length === 0 && !passwordField.activeFocus
                     renderType: Text.NativeRendering
@@ -142,8 +140,8 @@ Item {
 
                     anchors {
                         fill: parent
-                        leftMargin: 20
-                        rightMargin: 20
+                        leftMargin: Math.round(20 * root.uiScale)
+                        rightMargin: Math.round(20 * root.uiScale)
                     }
 
                     focus: true
@@ -154,14 +152,14 @@ Item {
                     verticalAlignment: TextInput.AlignVCenter
 
                     font.family: config.FontFamily
-                    font.pixelSize: 18
+                    font.pixelSize: Math.round(18 * root.uiScale)
                     color: config.InputText
                     selectionColor: config.AccentGreen
                     selectedTextColor: "#FFFFFF"
                     clip: true
 
                     Keys.onReturnPressed: root.doLogin(passwordField.text)
-                    Keys.onEnterPressed: root.doLogin(passwordField.text)
+                    Keys.onEnterPressed:  root.doLogin(passwordField.text)
                 }
             }
 
@@ -169,8 +167,8 @@ Item {
                 id: loginButton
 
                 width: parent.width
-                height: parseInt(config.ButtonHeight)
-                radius: parseInt(config.ButtonRadius)
+                height: Math.round(parseInt(config.ButtonHeight) * root.uiScale)
+                radius: Math.round(parseInt(config.ButtonRadius) * root.uiScale)
                 color: loginMouseArea.pressed
                     ? config.ButtonPressed
                     : (loginMouseArea.containsMouse ? config.ButtonHover : config.ButtonBg)
@@ -183,7 +181,7 @@ Item {
                     anchors.centerIn: parent
                     text: config.LabelSignIn
                     font.family: config.FontFamily
-                    font.pixelSize: 16
+                    font.pixelSize: Math.round(16 * root.uiScale)
                     font.weight: Font.Medium
                     color: config.ButtonText
                     renderType: Text.NativeRendering
@@ -201,11 +199,11 @@ Item {
                 id: errorMessage
 
                 width: parent.width
-                height: 18
+                height: Math.round(18 * root.uiScale)
                 horizontalAlignment: Text.AlignHCenter
                 text: ""
                 font.family: config.FontFamily
-                font.pixelSize: 13
+                font.pixelSize: Math.round(13 * root.uiScale)
                 color: config.DangerRed
                 opacity: text.length > 0 ? 1 : 0
                 renderType: Text.NativeRendering

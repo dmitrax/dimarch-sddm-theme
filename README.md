@@ -67,6 +67,11 @@ sddm-greeter --test-mode --theme /usr/share/sddm/themes/dimarch
 
 ## Changelog
 
+### 1.2.0
+- Multi-monitor support: `PrimaryX/Y/Width/Height` in `theme.conf`
+- Auto UI scale: 1x at 1080p, 1.5x at 1440p, 2x at 4K — no manual config needed
+- All sizes scaled consistently across every component
+
 ### 1.1.0
 - Localization system: all UI strings moved to `theme.conf`
 - Added `locale/en.conf` and `locale/ru.conf`

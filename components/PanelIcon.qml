@@ -7,8 +7,8 @@ import QtQuick 2.15
 Item {
     id: iconRoot
 
-    width: 36
-    height: 36
+    width:  Math.round(36 * root.uiScale)
+    height: Math.round(36 * root.uiScale)
 
     property string symbol: ""
     property color baseColor: "#4B5563"
@@ -17,7 +17,7 @@ Item {
 
     Rectangle {
         anchors.fill: parent
-        radius: 11
+        radius: Math.round(11 * root.uiScale)
         color: mouse.containsMouse ? "#45FFFFFF" : "transparent"
 
         Behavior on color {
@@ -29,7 +29,7 @@ Item {
         anchors.centerIn: parent
         text: iconRoot.symbol
         font.family: config.FontFamily
-        font.pixelSize: 23
+        font.pixelSize: Math.round(23 * root.uiScale)
         font.weight: Font.Medium
         color: mouse.containsMouse ? iconRoot.hoverColor : iconRoot.baseColor
         renderType: Text.NativeRendering

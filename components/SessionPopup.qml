@@ -8,8 +8,8 @@ import QtGraphicalEffects 1.15
 Item {
     id: popupRoot
 
-    width: 260
-    height: Math.max(1, sessionList.count) * 42 + 12
+    width:  Math.round(260 * root.uiScale)
+    height: Math.max(1, sessionList.count) * Math.round(42 * root.uiScale) + Math.round(12 * root.uiScale)
 
     Rectangle {
         id: shadowSource
@@ -22,8 +22,8 @@ Item {
         anchors.fill: shadowSource
         source: shadowSource
         horizontalOffset: 0
-        verticalOffset: 10
-        radius: 30
+        verticalOffset: Math.round(10 * root.uiScale)
+        radius: Math.round(30 * root.uiScale)
         samples: 44
         color: "#24000000"
         cached: true
@@ -33,7 +33,7 @@ Item {
         id: popup
 
         anchors.fill: parent
-        radius: 16
+        radius: Math.round(16 * root.uiScale)
         color: "#E6FFFFFF"
         border.color: "#99FFFFFF"
         border.width: 1
@@ -43,7 +43,7 @@ Item {
 
             anchors {
                 fill: parent
-                margins: 6
+                margins: Math.round(6 * root.uiScale)
             }
 
             clip: true
@@ -52,8 +52,8 @@ Item {
 
             delegate: Rectangle {
                 width: sessionList.width
-                height: 42
-                radius: 12
+                height: Math.round(42 * root.uiScale)
+                radius: Math.round(12 * root.uiScale)
 
                 property bool selected: index === root.selectedSessionIndex
 
@@ -68,16 +68,15 @@ Item {
                 Text {
                     anchors {
                         left: parent.left
-                        leftMargin: 16
+                        leftMargin: Math.round(16 * root.uiScale)
                         right: selectedMark.left
-                        rightMargin: 10
+                        rightMargin: Math.round(10 * root.uiScale)
                         verticalCenter: parent.verticalCenter
                     }
-
                     text: model.name
                     elide: Text.ElideRight
                     font.family: config.FontFamily
-                    font.pixelSize: 14
+                    font.pixelSize: Math.round(14 * root.uiScale)
                     font.weight: selected ? Font.Medium : Font.Normal
                     color: config.TextPrimary
                     renderType: Text.NativeRendering
@@ -85,17 +84,15 @@ Item {
 
                 Text {
                     id: selectedMark
-
                     anchors {
                         right: parent.right
-                        rightMargin: 14
+                        rightMargin: Math.round(14 * root.uiScale)
                         verticalCenter: parent.verticalCenter
                     }
-
                     text: "✓"
                     visible: selected
                     font.family: config.FontFamily
-                    font.pixelSize: 14
+                    font.pixelSize: Math.round(14 * root.uiScale)
                     font.weight: Font.Medium
                     color: config.AccentGreen
                     renderType: Text.NativeRendering
@@ -105,7 +102,6 @@ Item {
                     id: sessionMouseArea
                     anchors.fill: parent
                     hoverEnabled: true
-
                     onClicked: {
                         root.setSession(index, model.name)
                         sessionPopup.visible = false

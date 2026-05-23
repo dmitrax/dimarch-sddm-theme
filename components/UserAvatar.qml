@@ -77,7 +77,7 @@ Item {
         text: config.AvatarMonogram
         visible: !(avatarFaceIcon.visible || avatarFace.visible || avatarTheme.visible)
         font.family: config.FontFamily
-        font.pixelSize: 30
+        font.pixelSize: Math.round(30 * root.uiScale)
         font.weight: Font.DemiBold
         color: config.AccentGreen
         renderType: Text.NativeRendering
