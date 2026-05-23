@@ -37,8 +37,11 @@ sudo /usr/share/sddm/themes/dimarch/scripts/update-theme.sh --name "DimArch OS"
 # Set locale explicitly
 sudo /usr/share/sddm/themes/dimarch/scripts/update-theme.sh --locale ru
 
-# Both at once
-sudo /usr/share/sddm/themes/dimarch/scripts/update-theme.sh --name "DimArch OS" --locale en
+# Set login monitor explicitly
+sudo /usr/share/sddm/themes/dimarch/scripts/update-theme.sh --monitor DP-1
+
+# All at once
+sudo /usr/share/sddm/themes/dimarch/scripts/update-theme.sh --name "DimArch OS" --locale ru --monitor DP-1
 ```
 
 ## Available locales
@@ -66,6 +69,11 @@ sddm-greeter --test-mode --theme /usr/share/sddm/themes/dimarch
 ```
 
 ## Changelog
+
+### 1.3.0
+- `update-theme.sh` auto-detects primary monitor geometry via `xrandr`
+- New `--monitor <name|primary>` flag for explicit monitor selection
+- On single-monitor systems or when xrandr is unavailable: graceful fallback to full screen
 
 ### 1.2.0
 - Multi-monitor support: `PrimaryX/Y/Width/Height` in `theme.conf`
