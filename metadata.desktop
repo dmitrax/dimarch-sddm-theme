@@ -1,0 +1,12 @@
+[SddmGreeterTheme]
+Name=DimArch
+Description=Premium frosted-glass SDDM theme for DimArch OS
+Author=DimArch
+Copyright=2026 DimArch
+License=GPL-3.0-or-later
+Type=sddm-theme
+Version=1.1.0
+MainScript=Main.qml
+ConfigFile=theme.conf
+Theme-Id=dimarch
+Theme-API=2.0
