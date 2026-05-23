@@ -1,0 +1,15 @@
+# macOS
+.DS_Store
+._*
+
+# Linux
+*~
+*.swp
+*.swo
+
+# Editors
+.vscode/
+.idea/
+
+# Theme — local overrides (don't commit personal backgrounds)
+backgrounds/login-lock.jpg
