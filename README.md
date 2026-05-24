@@ -12,6 +12,18 @@ Premium frosted-glass SDDM login theme for DimArch OS.
 - Multi-language: English and Russian included
 - All visual parameters configurable via `theme.conf`
 
+## Dependencies
+
+Arch Linux / CachyOS:
+```bash
+sudo pacman -S sddm qt5-graphicaleffects ttf-inter-variable rsync
+```
+
+Optional (cursor theme):
+```bash
+sudo pacman -S bibata-cursor-theme
+```
+
 ## Installation
 
 ```bash
@@ -75,6 +87,9 @@ To override, set `UiScale` in `theme.conf`:
 UiScale=1.3
 ```
 
+> **Note:** on Wayland, SDDM may expose logical/effective monitor size rather than physical pixels.
+> If the UI looks too small or too large, set `UiScale` manually.
+
 ## Multi-monitor
 
 The theme exposes `PrimaryX`, `PrimaryY`, `PrimaryWidth` and `PrimaryHeight` in `theme.conf`,
@@ -96,6 +111,14 @@ PrimaryHeight=0
 ```bash
 sddm-greeter --test-mode --theme /usr/share/sddm/themes/dimarch
 ```
+
+## Notes
+
+- `PrimaryX/Y/Width/Height` are experimental — leave at `0` unless you have tested your exact SDDM monitor mapping.
+- In `sddm-greeter --test-mode`, login and shutdown actions may print socket errors. This is expected.
+- If `.face.icon` is not readable by SDDM, the theme falls back to `ThemeAvatar` or `DA` monogram.
+- SDDM Wayland backend is not tested with this theme. 
+  For experimentation see branch `feature/sddm-wayland` (planned).
 
 ## Changelog
 
