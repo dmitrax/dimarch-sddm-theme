@@ -122,6 +122,15 @@ sddm-greeter --test-mode --theme /usr/share/sddm/themes/dimarch
 
 ## Changelog
 
+### 1.4.0
+- Glass card: semi-transparent frosted card with `layer.effect: DropShadow`
+- Power buttons integrated into card footer (pill-shaped, matches form width)
+- Auto-height layout: card height adapts to content — no empty zones
+- Background auto-detection in `update-theme.sh` — works with `.jpg`, `.png`, `.webp`
+- SessionPopup transparency matches card style
+- Configurable card geometry: `CardContentTopMargin`, `CardFooterGap`, `CardBottomPadding`, `FooterHeight`, `FooterIconSpacing`, `FormWidthRatio`
+- `CardHeight=0` enables auto-height mode
+
 ### 1.3.1
 - **Scale fix:** auto thresholds revised — 4K→1.5x, 1440p→1.2x, 1080p→1.0x, <1080p→0.85x
 - **UiScale** override in `theme.conf` — set explicitly if auto-detect is wrong

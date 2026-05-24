@@ -38,8 +38,9 @@ Item {
 
         anchors.fill: parent
         radius: Math.round(16 * root.uiScale)
-        color: "#E6FFFFFF"
-        border.color: "#99FFFFFF"
+        color: "white"
+        opacity: 0.72
+        border.color: "#FFFFFF"
         border.width: 1
         clip: true
 

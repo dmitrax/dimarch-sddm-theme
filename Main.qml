@@ -17,31 +17,20 @@ Rectangle {
     height: parent ? parent.height : 1080
     color: config.FallbackBg
 
-    // ── Primary monitor zone ──────────────────────────────
-    // If PrimaryWidth/Height are 0, fall back to full screen.
-    // Use physical pixel values from your display configuration.
-
     property int primaryX:      parseInt(config.PrimaryX)      > 0 ? parseInt(config.PrimaryX)      : 0
     property int primaryY:      parseInt(config.PrimaryY)      > 0 ? parseInt(config.PrimaryY)      : 0
     property int primaryWidth:  parseInt(config.PrimaryWidth)  > 0 ? parseInt(config.PrimaryWidth)  : root.width
     property int primaryHeight: parseInt(config.PrimaryHeight) > 0 ? parseInt(config.PrimaryHeight) : root.height
 
-    // ── Auto UI scale based on primary monitor height ─────
-    // Base sizes in theme.conf are defined for 1080p.
-    // UiScale=0 in theme.conf means auto-detect.
-
     property real uiScale: {
         var manual = parseFloat(config.UiScale)
-        if (manual > 0) return manual          // manual override
-
+        if (manual > 0) return manual
         var h = primaryHeight
-        if (h >= 2160) return 1.5             // 4K
-        if (h >= 1440) return 1.2             // 1440p
-        if (h >= 1080) return 1.0             // 1080p
-        return 0.85                            // below 1080p
+        if (h >= 2160) return 1.5
+        if (h >= 1440) return 1.2
+        if (h >= 1080) return 1.0
+        return 0.85
     }
-
-    // ── Session state ─────────────────────────────────────
 
     property int selectedSessionIndex: 0
     property string currentSessionName: ""
@@ -63,10 +52,8 @@ Rectangle {
         sessionPopup.visible = !sessionPopup.visible
     }
 
-    // Initialize visible session name
     Repeater {
         model: sessionModel
-
         delegate: Item {
             Component.onCompleted: {
                 if (sessionModel.lastIndex >= 0) {
@@ -83,7 +70,7 @@ Rectangle {
         }
     }
 
-    // ── Background (covers full virtual desktop) ──────────
+    // ── Background ────────────────────────────────────────
 
     Image {
         id: bgImage
@@ -110,7 +97,7 @@ Rectangle {
         }
     }
 
-    // ── Primary zone — all UI lives here ─────────────────
+    // ── Primary zone ──────────────────────────────────────
 
     Item {
         id: primaryZone
@@ -137,10 +124,6 @@ Rectangle {
                 id: loginCard
                 sessionName: root.currentSessionName
             }
-
-            PowerPanel {
-                anchors.horizontalCenter: parent.horizontalCenter
-            }
         }
 
         SessionPopup {
@@ -152,17 +135,9 @@ Rectangle {
         }
     }
 
-    // ── SDDM signals ──────────────────────────────────────
-
     Connections {
         target: sddm
-
-        function onLoginFailed() {
-            loginCard.onLoginFailed()
-        }
-
-        function onLoginSucceeded() {
-            loginCard.onLoginSucceeded()
-        }
+        function onLoginFailed()    { loginCard.onLoginFailed() }
+        function onLoginSucceeded() { loginCard.onLoginSucceeded() }
     }
 }

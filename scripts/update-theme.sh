@@ -127,6 +127,22 @@ apply_locale() {
 echo "DimArch SDDM Theme — update-theme.sh"
 echo "────────────────────────────────────"
 
+# Auto-detect background file (any image in backgrounds/)
+BG_DIR="${THEME_DIR}/backgrounds"
+BG_FILE=""
+for ext in jpg jpeg png webp; do
+    if [[ -f "${BG_DIR}/login-lock.${ext}" ]]; then
+        BG_FILE="backgrounds/login-lock.${ext}"
+        break
+    fi
+done
+if [[ -n "$BG_FILE" ]]; then
+    patch_key "BgSource" "$BG_FILE"
+    echo "  Background  → ${BG_FILE}"
+else
+    echo "  Background  → not found in ${BG_DIR} (skipped)"
+fi
+
 # Resolve and apply SystemName
 if [[ -n "$ARG_NAME" ]]; then
     SYSTEM_NAME="$ARG_NAME"
