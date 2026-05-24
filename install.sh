@@ -8,7 +8,13 @@ DST_DIR="/usr/share/sddm/themes/${THEME_NAME}"
 echo "[→] Installing ${THEME_NAME} SDDM theme..."
 
 sudo mkdir -p "$DST_DIR"
-sudo rsync -a --delete "$SRC_DIR/" "$DST_DIR/"
+sudo rsync -a --delete \
+    --exclude='.git' \
+    --exclude='.gitignore' \
+    --exclude='install.sh' \
+    --exclude='*.md' \
+    --exclude='**/.gitkeep' \
+    "$SRC_DIR/" "$DST_DIR/"
 sudo chmod -R a+rX "$DST_DIR"
 sudo chmod +x "$DST_DIR/scripts/update-theme.sh"
 
